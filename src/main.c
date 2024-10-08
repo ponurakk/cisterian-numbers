@@ -107,19 +107,19 @@ int main() {
   glDeleteShader(vertexShader);
   glDeleteShader(fragmentShader);
 
-  float vertices[] = {
+  float vertices_num_1[] = {
       0.0f, 0.0f, 0.0f,  // bl
       0.01f, 0.0f, 0.0f, // br
       0.0f, 0.5f, 0.0f,  // tl
       0.01f, 0.5f, 0.0f, // tr
-                         ///
-      0.0f, 0.48f, 0.0f, // 2bl
-      0.1f, 0.48f, 0.0f, // 2br
+                         /// 12
+      0.0f, 0.49f, 0.0f, // 2bl
+      0.1f, 0.49f, 0.0f, // 2br
       0.0f, 0.5f, 0.0f,  // 2tl
       0.1f, 0.5f, 0.0f,  // 2tr
   };
 
-  unsigned int indices[] = {
+  unsigned int indices_num_1[] = {
       0, 1, 2, // tr l
       1, 2, 3, // tr r
                ///
@@ -129,21 +129,28 @@ int main() {
 
   unsigned int VAO[4] = {0, 0, 0, 0};
 
-  VAO[0] = draw(vertices, sizeof(vertices), indices, sizeof(indices));
+  VAO[0] = draw(vertices_num_1, sizeof(vertices_num_1), indices_num_1,
+                sizeof(indices_num_1));
 
-  float vertices2[] = {
-      0.0f, 0.0f, 0.0f,   // bl
-      0.01f, 0.0f, 0.0f,  // br
-      0.0f, 0.5f, 0.0f,   // tl
-      0.01f, 0.5f, 0.0f,  // tr
-                          ///
-      0.0f, 0.38f, 0.0f,  // 2bl
-      -0.1f, 0.38f, 0.0f, // 2br
-      0.0f, 0.4f, 0.0f,   // 2tl
-      -0.1f, 0.4f, 0.0f,  // 2tr
-  };
+  vertices_num_1[15] = -vertices_num_1[15];
+  vertices_num_1[21] = -vertices_num_1[21];
 
-  VAO[1] = draw(vertices2, sizeof(vertices2), indices, sizeof(indices));
+  VAO[1] = draw(vertices_num_1, sizeof(vertices_num_1), indices_num_1,
+                sizeof(indices_num_1));
+
+  vertices_num_1[13] = vertices_num_1[13] - 0.5f;
+  vertices_num_1[16] = vertices_num_1[16] - 0.5f;
+  vertices_num_1[19] = vertices_num_1[19] - 0.5f;
+  vertices_num_1[22] = vertices_num_1[22] - 0.5f;
+
+  VAO[2] = draw(vertices_num_1, sizeof(vertices_num_1), indices_num_1,
+                sizeof(indices_num_1));
+
+  vertices_num_1[15] = -vertices_num_1[15];
+  vertices_num_1[21] = -vertices_num_1[21];
+
+  VAO[3] = draw(vertices_num_1, sizeof(vertices_num_1), indices_num_1,
+                sizeof(indices_num_1));
 
   // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
@@ -159,7 +166,8 @@ int main() {
         continue;
 
       glBindVertexArray(VAO[i]);
-      glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(indices[0]),
+      glDrawElements(GL_TRIANGLES,
+                     sizeof(indices_num_1) / sizeof(indices_num_1[0]),
                      GL_UNSIGNED_INT, 0);
     }
 
