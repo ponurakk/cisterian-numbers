@@ -1,3 +1,4 @@
+#include "vertices.h"
 #include <glad/glad.h>
 
 #include <GLFW/glfw3.h>
@@ -24,8 +25,7 @@ const char *fragmentShaderSource =
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void processInput(GLFWwindow *window);
 
-unsigned int draw(float vertices[], unsigned long vertices_size,
-                  unsigned int indices[], unsigned long indices_size) {
+unsigned int draw(Shape shape) {
   unsigned int VBO, VAO, EBO;
   glGenVertexArrays(1, &VAO);
   glGenBuffers(1, &VBO);
@@ -34,10 +34,12 @@ unsigned int draw(float vertices[], unsigned long vertices_size,
   glBindVertexArray(VAO);
 
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
-  glBufferData(GL_ARRAY_BUFFER, vertices_size, vertices, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, shape.vertices.size, shape.vertices.arr,
+               GL_STATIC_DRAW);
 
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices_size, indices, GL_STATIC_DRAW);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, shape.indices.size, shape.indices.arr,
+               GL_STATIC_DRAW);
 
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
   glEnableVertexAttribArray(0);
@@ -107,7 +109,7 @@ int main() {
   glDeleteShader(vertexShader);
   glDeleteShader(fragmentShader);
 
-  float vertices_num_1[] = {
+  float vertices[] = {
       0.0f, 0.0f, 0.0f,  // bl
       0.01f, 0.0f, 0.0f, // br
       0.0f, 0.5f, 0.0f,  // tl
@@ -119,7 +121,7 @@ int main() {
       0.1f, 0.5f, 0.0f,  // 2tr
   };
 
-  unsigned int indices_num_1[] = {
+  unsigned int indices[] = {
       0, 1, 2, // tr l
       1, 2, 3, // tr r
                ///
@@ -127,30 +129,18 @@ int main() {
       5, 6, 7  // 2tr t
   };
 
+  Shape n1 = {.vertices = {.arr = vertices, .size = sizeof(vertices)},
+              .indices = {.arr = indices, .size = sizeof(indices)}};
+
   unsigned int VAO[4] = {0, 0, 0, 0};
 
-  VAO[0] = draw(vertices_num_1, sizeof(vertices_num_1), indices_num_1,
-                sizeof(indices_num_1));
-
-  vertices_num_1[15] = -vertices_num_1[15];
-  vertices_num_1[21] = -vertices_num_1[21];
-
-  VAO[1] = draw(vertices_num_1, sizeof(vertices_num_1), indices_num_1,
-                sizeof(indices_num_1));
-
-  vertices_num_1[13] = vertices_num_1[13] - 0.5f;
-  vertices_num_1[16] = vertices_num_1[16] - 0.5f;
-  vertices_num_1[19] = vertices_num_1[19] - 0.5f;
-  vertices_num_1[22] = vertices_num_1[22] - 0.5f;
-
-  VAO[2] = draw(vertices_num_1, sizeof(vertices_num_1), indices_num_1,
-                sizeof(indices_num_1));
-
-  vertices_num_1[15] = -vertices_num_1[15];
-  vertices_num_1[21] = -vertices_num_1[21];
-
-  VAO[3] = draw(vertices_num_1, sizeof(vertices_num_1), indices_num_1,
-                sizeof(indices_num_1));
+  VAO[0] = draw(n1);
+  Shape n2 = to10(n1);
+  VAO[1] = draw(n2);
+  // n2 = to100(n1);
+  // VAO[2] = draw(n2);
+  // n2 = to1000(n1);
+  // VAO[3] = draw(n2);
 
   // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
@@ -166,8 +156,7 @@ int main() {
         continue;
 
       glBindVertexArray(VAO[i]);
-      glDrawElements(GL_TRIANGLES,
-                     sizeof(indices_num_1) / sizeof(indices_num_1[0]),
+      glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(indices[0]),
                      GL_UNSIGNED_INT, 0);
     }
 

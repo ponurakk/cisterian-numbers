@@ -6,6 +6,7 @@ set(CMAKE_C_FLAGS_DEBUG "-g")
 
 set(SOURCE_FILES
   src/main.c
+  src/vertices.c
 )
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
