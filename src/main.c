@@ -131,18 +131,23 @@ int main() {
 
   Shape n1 = {.vertices = {.arr = vertices, .size = sizeof(vertices)},
               .indices = {.arr = indices, .size = sizeof(indices)}};
+  Shape m;
 
   unsigned int VAO[4] = {0, 0, 0, 0};
 
   VAO[0] = draw(n1);
-  Shape n2 = to10(n1);
-  VAO[1] = draw(n2);
-  // n2 = to100(n1);
-  // VAO[2] = draw(n2);
-  // n2 = to1000(n1);
-  // VAO[3] = draw(n2);
+  m = to10(n1);
+  VAO[1] = draw(m);
+  m = to100(n1);
+  VAO[2] = draw(m);
+  m = to1000(n1);
+  VAO[3] = draw(m);
 
   // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+  int val[] = {0, 0, 0, 0};
+  int idx = 0;
+  int key_pressed = 0;
 
   while (!glfwWindowShouldClose(window)) {
     processInput(window);
@@ -151,13 +156,58 @@ int main() {
     glClear(GL_COLOR_BUFFER_BIT);
 
     glUseProgram(shaderProgram);
+
+    if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS && !key_pressed) {
+      if (idx < 4 && val[idx] == 0) {
+        val[idx++] = 0;
+      }
+      key_pressed = 1;
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS && !key_pressed) {
+      if (idx < 4 && val[idx] == 0) {
+        val[idx++] = 1;
+      }
+      key_pressed = 1;
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS && !key_pressed) {
+      if (idx < 4 && val[idx] == 0) {
+        val[idx++] = 2;
+      }
+      key_pressed = 1;
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_BACKSPACE) == GLFW_PRESS && !key_pressed) {
+      if (idx > 0) {
+        val[--idx] = 0;
+      }
+      key_pressed = 1;
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_0) == GLFW_RELEASE &&
+        glfwGetKey(window, GLFW_KEY_1) == GLFW_RELEASE &&
+        glfwGetKey(window, GLFW_KEY_2) == GLFW_RELEASE &&
+        glfwGetKey(window, GLFW_KEY_BACKSPACE) == GLFW_RELEASE) {
+      key_pressed = 0;
+    }
+
+    // printf("%i, %i, %i, %i -> %i\n", val[0], val[1], val[2], val[3], idx);
+
+    for (int i = 3; i >= 0; --i) {
+      printf("%d", val[i]);
+    }
+    printf("\n");
+
     for (int i = 0; i < sizeof(VAO) / sizeof(VAO[0]); ++i) {
       if (VAO[i] == 0)
         continue;
 
-      glBindVertexArray(VAO[i]);
-      glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(indices[0]),
-                     GL_UNSIGNED_INT, 0);
+      if (val[i] != 0) {
+        glBindVertexArray(VAO[i]);
+        glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(indices[0]),
+                       GL_UNSIGNED_INT, 0);
+      }
     }
 
     glfwSwapBuffers(window);
